@@ -2,7 +2,11 @@ import omni.ext
 import omni.ui as ui
 import omni.kit.commands
 from pxr import Sdf,Usd
+from .img2txt2img import img2txt2img
 
+
+OUTPUT_PATH = r"d:\temp\predicted_label_image.png"
+MODEL_PATH = r"D:\learn\omni_code\test01\exts\na_vi_da_test\na_vi_da_test\mnist_cnn.pt"
 
 # Functions and vars are available to other extension as usual in python: `example.python_ext.some_public_function(x)`
 def some_public_function(x: int):
@@ -31,15 +35,14 @@ class Na_vi_da_testExtension(omni.ext.IExt):
                 
                 def click_load_image():
                     image_path = self.image_path.model.get_value_as_string()
-                    print (f"load image: {image_path}")
                     
+                    print (f"load image: {image_path}")
+                    img2txt2img(MODEL_PATH, image_path, OUTPUT_PATH)
 
                     omni.kit.commands.execute('ChangeProperty',
                     prop_path=Sdf.Path('/World/Looks/OmniPBR/Shader.inputs:diffuse_texture'),
-                    value=Sdf.AssetPath(image_path),
-                    prev=None,
-                    target_layer=Sdf.Find('anon:000001AB0879B400:World0.usd'),
-                    usd_context_name=Usd.Stage.Open(rootLayer=Sdf.Find('anon:000001AB0879B400:World0.usd'), sessionLayer=Sdf.Find('anon:000001AB0879A5F0:World0-session.usda')))
+                    value=Sdf.AssetPath(OUTPUT_PATH),
+                    prev=None)
 
                  
                 def click_reset():
@@ -49,10 +52,12 @@ class Na_vi_da_testExtension(omni.ext.IExt):
                     ui.Button("Spwan Cube", clicked_fn=click_spwan_cube)
                     ui.Button("Reset", clicked_fn=click_reset)
                 
-                with ui.HStack():
-                    ui.Button("Load Image From Path", clicked_fn=click_load_image)
-                with ui.HStack():
-                    self.image_path = ui.StringField()
+                
+                ui.Button("Load Image From Path", clicked_fn=click_load_image)
+                ui.Label("Image Path:")
+                self.image_path = ui.StringField()
+                
+                #ui.Image(self.image_path.model.get_value_as_string(), width=100, height=100)
                     
     def spwan_cube(self):
         omni.kit.commands.execute('cl')

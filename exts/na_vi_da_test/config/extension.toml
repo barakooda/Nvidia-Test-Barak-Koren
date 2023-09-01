@@ -36,6 +36,7 @@ icon = "data/icon.png"
 [dependencies]
 "omni.kit.uiapp" = {}
 
+
 # Main python module this extension provides, it will be publicly available as "import na_vi_da_test".
 [[python.module]]
 name = "na_vi_da_test"
