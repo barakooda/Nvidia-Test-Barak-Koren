@@ -39,7 +39,6 @@ class Net(nn.Module):
         return output
 
 def img2txt2img(model_path:str,image_path:str,output_path:str):
-    print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@: ",os.getcwd())
     
     # Initialize the model
     model = Net()
@@ -52,6 +51,7 @@ def img2txt2img(model_path:str,image_path:str,output_path:str):
 
     #input image
     input_image = Image.open(image_path).convert('L')
+    #input_image.show()
 
     # Define the transformation
     transform = transforms.Compose([
