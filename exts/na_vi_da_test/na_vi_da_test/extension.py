@@ -75,7 +75,7 @@ class Na_vi_da_testExtension(omni.ext.IExt):
         self.provider = ui.ByteImageProvider()
         self.provider.set_data_array(self.image_data_np, self.image_data_size)
 
-        self._window = ui.Window("Textured Cube", width=256, height=720)
+        self._window = ui.Window("Textured Cube", width=512, height=256)
         with self._window.frame:
             
             
