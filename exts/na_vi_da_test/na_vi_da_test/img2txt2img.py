@@ -1,17 +1,18 @@
+# WROTE THIS CODE WITH THE HELP OF CHAT GPT 4
 import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 import torchvision.transforms as transforms
 
 
 MODEL_PATH = r"C:\temp\mnist_cnn.pt"
 IMAGE_PATH = r"C:\temp\MNIST\testSet\testSet\img_1719.jpg"
 PREDICTED_TEXT_IMAGE_PATH = r"C:\temp\predicted_label_image.png"
-# WROTE THIS CODE WITH THE HELP OF CHAT GPT 4
+
 
 class Net(nn.Module):
     def __init__(self):
@@ -50,8 +51,10 @@ def img2txt2img(model_path:str,image_path:str,output_path:str):
     model.eval()
 
     #input image
-    input_image = Image.open(image_path).convert('L')
-    #input_image.show()
+    input_image = Image.open(image_path)
+    input_image = input_image.resize((28, 28))
+    input_image = input_image.split()[0]
+    input_image = ImageOps.invert(input_image)
 
     # Define the transformation
     transform = transforms.Compose([
