@@ -43,6 +43,23 @@ class Na_vi_da_testExtension(omni.ext.IExt):
     
     # ext_id is current extension id. It can be used with extension manager to query additional information, like where
     # this extension is located on filesystem.
+    def click_spwan_cube(self):
+        self.spwan_cube()
+                
+    def click_load_image(self):
+        image_path = self.image_path.model.get_value_as_string()
+        
+        print (f"load image: {image_path}")
+        img2txt2img(MODEL_PATH, image_path, OUTPUT_PATH)
+
+        omni.kit.commands.execute('ChangeProperty',
+        prop_path=Sdf.Path('/World/Looks/OmniPBR/Shader.inputs:diffuse_texture'),
+        value=Sdf.AssetPath(OUTPUT_PATH),
+        prev=None)
+
+    def click_reset(self):
+        self.clear_all()
+    
     
     def clear_image(self):
         self.image_data.fill(255)
@@ -75,47 +92,35 @@ class Na_vi_da_testExtension(omni.ext.IExt):
         self.provider = ui.ByteImageProvider()
         self.provider.set_data_array(self.image_data_np, self.image_data_size)
 
-        self._window = ui.Window("Textured Cube", width=512, height=256)
+        self._window = ui.Window("Textured Cube", width=512, height=512)
         with self._window.frame:
             
             
             with ui.VStack():
-                def click_spwan_cube():
-                    self.spwan_cube()
+
+                with ui.HStack(height=ui.Percent(5)):
+                    ui.Button("Spwan Cube", clicked_fn=self.click_spwan_cube,width=64,height=64)
+                    ui.Button("Reset", clicked_fn=self.click_reset,width=64,height=64)
                 
-                def click_load_image():
-                    image_path = self.image_path.model.get_value_as_string()
-                    
-                    print (f"load image: {image_path}")
-                    img2txt2img(MODEL_PATH, image_path, OUTPUT_PATH)
-
-                    omni.kit.commands.execute('ChangeProperty',
-                    prop_path=Sdf.Path('/World/Looks/OmniPBR/Shader.inputs:diffuse_texture'),
-                    value=Sdf.AssetPath(OUTPUT_PATH),
-                    prev=None)
-
-                def click_reset():
-                    self.clear_all()
-
-                with ui.HStack():
-                    ui.Button("Spwan Cube", clicked_fn=click_spwan_cube,width=64,height=64)
-                    ui.Button("Reset", clicked_fn=click_reset,width=64,height=64)
-                
-                with ui.CollapsableFrame("By Image Path"):
-                    with ui.VStack():
-                        ui.Button("Load Image From Path", clicked_fn=click_load_image)
-                        ui.Label("Image Path:")
-                        self.image_path = ui.StringField()
-                with ui.CollapsableFrame("By Drawing"):
-                     with ui.VStack():
-                        ui.Button("clear",width=32,height=16, clicked_fn=self.clear_image)
-                        self._image = ui.ImageWithProvider(
-                        self.provider,
-                        width=TEXTURE_SIZE,
-                        height=TEXTURE_SIZE,
-                        fill_policy=ui.IwpFillPolicy.IWP_PRESERVE_ASPECT_FIT)
-                        
-                        
+                with ui.VStack(height=ui.Percent(20)):
+                    with ui.CollapsableFrame("By Image Path"):
+                        with ui.VStack():
+                            ui.Button("Load Image From Path", clicked_fn=self.click_load_image)
+                            ui.Label("Image Path:")
+                            self.image_path = ui.StringField()
+                with ui.VStack(height=ui.Percent(75)):
+                    with ui.CollapsableFrame("By Drawing"):
+                        with ui.VStack():
+                            with ui.HStack(height=ui.Percent(5)):
+                                ui.Button("Submit",width=32,height=16, clicked_fn=self.clear_image)
+                                ui.Button("Clear",width=32,height=16, clicked_fn=self.clear_image)
+                            self._image = ui.ImageWithProvider(
+                            self.provider,
+                            width=TEXTURE_SIZE,
+                            height=TEXTURE_SIZE,
+                            fill_policy=ui.IwpFillPolicy.IWP_PRESERVE_ASPECT_FIT)
+                            
+                             
                 self._image.set_mouse_moved_fn(lambda x, y, b, m: self._on_mouse_pressed(x,y,b))
                 self._image.set_mouse_pressed_fn(lambda x, y, b, m: self._on_mouse_pressed(x,y,b))
                                    
