@@ -1,18 +1,27 @@
+import time
 import omni.ext
 import omni.ui as ui
 import omni.kit.commands
-from pxr import Sdf,Usd
+from pxr import Sdf,Usd,UsdUtils
 from .img2txt2img import img2txt2img
 from .circle import draw_circle
 from PIL import Image
 import numpy as np
+from .bug_fixes import fix_cube_uv
 TEXTURE_SIZE = 224
 
 OUTPUT_PATH = r"d:\temp\predicted_label_image.png"
 MODEL_PATH = r"D:\learn\omni_code\test01\exts\na_vi_da_test\na_vi_da_test\mnist_cnn.pt"
 
 # Functions and vars are available to other extension as usual in python: `example.python_ext.some_public_function(x)`
-
+def wait_for_stage(timeout=10):
+    end_time = time.time() + timeout
+    while time.time() < end_time:
+        stages = UsdUtils.StageCache.Get().GetAllStages()
+        if stages:
+            return stages[0]
+        time.sleep(0.1)  # Sleep for 100 milliseconds before checking again
+    return None
 
 # Any class derived from `omni.ext.IExt` in top level module (defined in `python.modules` of `extension.toml`) will be
 # instantiated when extension gets enabled and `on_startup(ext_id)` will be called. Later when extension gets disabled
@@ -77,8 +86,11 @@ class Na_vi_da_testExtension(omni.ext.IExt):
                                    
     def spwan_cube(self):
         omni.kit.commands.execute('cl')
-        self.cube = omni.kit.commands.execute('CreateMeshPrimWithDefaultXform',prim_type='Cube')[1]
-        print("##########",self.cube)
+        self.cube_path = omni.kit.commands.execute('CreateMeshPrimWithDefaultXform',prim_type='Cube')[1]
+        print("##########",self.cube_path)
+        stage = wait_for_stage()
+        cube = stage.GetPrimAtPath(self.cube_path)
+        fix_cube_uv(cube)
     
         self.mat = omni.kit.commands.execute('CreateAndBindMdlMaterialFromLibrary',
             mdl_name='OmniPBR.mdl',
@@ -118,6 +130,8 @@ class Na_vi_da_testExtension(omni.ext.IExt):
         prop_path=Sdf.Path('/World/Looks/OmniPBR/Shader.inputs:diffuse_texture'),
         value=Sdf.AssetPath(OUTPUT_PATH),
         prev=None)
+        omni.kit.commands.execute('Group')
+        
         
     def build_window(self):
          with self._window.frame:
