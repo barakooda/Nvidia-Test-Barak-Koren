@@ -62,7 +62,7 @@ class Na_vi_da_testExtension(omni.ext.IExt):
         x= x - image_pos_x
         y= y - image_pos_y
         
-        self.image_data = draw_circle(self.image_data, x, y, 5)
+        self.image_data = draw_circle(self.image_data, x, y, 8)
         
         self.image_data_np = self.image_data.data
         self.provider.set_data_array(self.image_data_np, self.image_data_size)

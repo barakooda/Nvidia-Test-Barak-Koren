@@ -2,7 +2,7 @@ import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .common import TEXTURE_SIZE
+from .common import TEXTURE_SIZE,TXT_SIZE
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 import torchvision.transforms as transforms
@@ -84,7 +84,7 @@ def img2txt2img(model_path:str,image_path:str,output_path:str):
     # Load a font
     # You might have to download a specific font or use one that's available on your system
     try:
-        font = ImageFont.truetype("arial.ttf", 120)
+        font = ImageFont.truetype("arial.ttf", TXT_SIZE)
     except IOError:
         font = ImageFont.load_default()
 

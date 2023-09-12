@@ -1,7 +1,6 @@
-# WROTE THIS CODE WITH THE HELP OF CHAT GPT 4
 import numpy as np
+from .common import TEXTURE_SIZE
 
-TEXTURE_SIZE = 224
 
 def draw_circle(image_data, coord_x, coord_y, radius)->np.ndarray:
 
