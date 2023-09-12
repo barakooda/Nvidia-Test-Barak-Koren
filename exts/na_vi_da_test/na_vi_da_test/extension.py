@@ -8,10 +8,9 @@ from .circle import draw_circle
 from PIL import Image
 import numpy as np
 from .bug_fixes import fix_cube_uv
-TEXTURE_SIZE = 224
 
-OUTPUT_PATH = r"d:\temp\predicted_label_image.png"
-MODEL_PATH = r"D:\learn\omni_code\test01\exts\na_vi_da_test\na_vi_da_test\mnist_cnn.pt"
+from .common import OUTPUT_PATH,MODEL_PATH,TEXTURE_SIZE
+
 
 # Functions and vars are available to other extension as usual in python: `example.python_ext.some_public_function(x)`
 def wait_for_stage(timeout=10):

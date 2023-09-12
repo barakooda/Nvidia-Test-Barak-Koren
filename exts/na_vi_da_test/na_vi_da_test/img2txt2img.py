@@ -1,17 +1,11 @@
-# WROTE THIS CODE WITH THE HELP OF CHAT GPT 4
 import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+from .common import TEXTURE_SIZE
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 import torchvision.transforms as transforms
-
-
-MODEL_PATH = r"C:\temp\mnist_cnn.pt"
-IMAGE_PATH = r"C:\temp\MNIST\testSet\testSet\img_1719.jpg"
-PREDICTED_TEXT_IMAGE_PATH = r"C:\temp\predicted_label_image.png"
 
 
 class Net(nn.Module):
@@ -83,14 +77,14 @@ def img2txt2img(model_path:str,image_path:str,output_path:str):
     print("Predicted label:", predicted_txt)
 
     # Create an image with white background
-    width, height = 128, 128
+    width, height = TEXTURE_SIZE, TEXTURE_SIZE
     image = Image.new("RGB", (width, height), "white")
     draw = ImageDraw.Draw(image)
 
     # Load a font
     # You might have to download a specific font or use one that's available on your system
     try:
-        font = ImageFont.truetype("arial.ttf", 80)
+        font = ImageFont.truetype("arial.ttf", 120)
     except IOError:
         font = ImageFont.load_default()
 
@@ -106,5 +100,3 @@ def img2txt2img(model_path:str,image_path:str,output_path:str):
 
     # Save or show image
     image.save(output_path)
-
-#img2txt2img(MODEL_PATH,IMAGE_PATH,PREDICTED_TEXT_IMAGE_PATH)
