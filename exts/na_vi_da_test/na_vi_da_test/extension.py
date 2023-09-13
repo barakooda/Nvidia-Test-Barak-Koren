@@ -2,25 +2,18 @@ import time
 import omni.ext
 import omni.ui as ui
 import omni.kit.commands
-from pxr import Sdf,Usd,UsdUtils
+from pxr import Sdf,Usd,UsdUtils,UsdShade
 from .img2txt2img import img2txt2img
 from .circle import draw_circle
 from PIL import Image
 import numpy as np
 from .bug_fixes import fix_cube_uv
-
+from .utils import wait_for_stage
 from .common import OUTPUT_PATH,MODEL_PATH,TEXTURE_SIZE
 
-
+#na_vi_da_test
 # Functions and vars are available to other extension as usual in python: `example.python_ext.some_public_function(x)`
-def wait_for_stage(timeout=10):
-    end_time = time.time() + timeout
-    while time.time() < end_time:
-        stages = UsdUtils.StageCache.Get().GetAllStages()
-        if stages:
-            return stages[0]
-        time.sleep(0.1)  # Sleep for 100 milliseconds before checking again
-    return None
+
 
 # Any class derived from `omni.ext.IExt` in top level module (defined in `python.modules` of `extension.toml`) will be
 # instantiated when extension gets enabled and `on_startup(ext_id)` will be called. Later when extension gets disabled
@@ -36,26 +29,14 @@ class Na_vi_da_testExtension(omni.ext.IExt):
     def click_load_image(self):
         image_path = self.image_path.model.get_value_as_string()
         
-        print (f"load image: {image_path}")
         img2txt2img(MODEL_PATH, image_path, OUTPUT_PATH)
 
-        omni.kit.commands.execute('ChangeProperty',
-        prop_path=Sdf.Path('/World/Looks/OmniPBR/Shader.inputs:diffuse_texture'),
-        value=Sdf.AssetPath(OUTPUT_PATH),
-        prev=None)
+        shader = UsdShade.Shader.Define(self.stage, f'/World/Looks/OmniPBR/Shader')
+        shader.GetInput('diffuse_texture').Set(OUTPUT_PATH)
 
     def click_reset(self):
         self.clear_all()
-    
-    
-    def clear_image(self):
-        self.image_data.fill(255)
-        self.image_data_size = self.image_data.shape[:2]
-        self.image_data_np = self.image_data.data
-        self.provider.set_data_array(self.image_data_np, self.image_data_size)
-        
-        print("clear")
-    
+
     def _on_mouse_pressed(self, x, y, key):
         image_pos_x=self._image.screen_position_x
         image_pos_y=self._image.screen_position_y
@@ -67,28 +48,21 @@ class Na_vi_da_testExtension(omni.ext.IExt):
         self.image_data_np = self.image_data.data
         self.provider.set_data_array(self.image_data_np, self.image_data_size)
     
-    
-    def on_startup(self, ext_id):
-        
-        self.image_path = ""
-        
-        self.image_data = np.ones((TEXTURE_SIZE, TEXTURE_SIZE, 4), dtype=np.uint8) * 255
+    def clear_image(self):
+        self.image_data.fill(255)
         self.image_data_size = self.image_data.shape[:2]
         self.image_data_np = self.image_data.data
-        
-        self.provider = ui.ByteImageProvider()
         self.provider.set_data_array(self.image_data_np, self.image_data_size)
-
-        self._window = ui.Window("Textured Cube", width=512, height=512)
         
-        self.build_window()
+        print("clear")
+    
                                    
     def spwan_cube(self):
         omni.kit.commands.execute('cl')
         self.cube_path = omni.kit.commands.execute('CreateMeshPrimWithDefaultXform',prim_type='Cube')[1]
         print("##########",self.cube_path)
-        stage = wait_for_stage()
-        cube = stage.GetPrimAtPath(self.cube_path)
+        self.stage = wait_for_stage()
+        cube = self.stage.GetPrimAtPath(self.cube_path)
         fix_cube_uv(cube)
     
         self.mat = omni.kit.commands.execute('CreateAndBindMdlMaterialFromLibrary',
@@ -103,6 +77,8 @@ class Na_vi_da_testExtension(omni.ext.IExt):
             material_path='/World/Looks/OmniPBR',
             prim_path=['/World/Cube'],
             strength=['weakerThanDescendants'])
+        
+        self.material = UsdShade.Material.Get(self.stage, '/World/Looks/OmniPBR')
         
         print("Cube Spwaned")
         
@@ -124,13 +100,9 @@ class Na_vi_da_testExtension(omni.ext.IExt):
         img = Image.fromarray(self.image_data,mode="RGBA")
         img.save(image_path, "PNG")
         img2txt2img(MODEL_PATH, image_path, OUTPUT_PATH)
-
-        omni.kit.commands.execute('ChangeProperty',
-        prop_path=Sdf.Path('/World/Looks/OmniPBR/Shader.inputs:diffuse_texture'),
-        value=Sdf.AssetPath(OUTPUT_PATH),
-        prev=None)
-        omni.kit.commands.execute('Group')
         
+        shader = UsdShade.Shader.Define(self.stage, f'/World/Looks/OmniPBR/Shader')
+        shader.GetInput('diffuse_texture').Set(OUTPUT_PATH)
         
     def build_window(self):
          with self._window.frame:
@@ -161,3 +133,18 @@ class Na_vi_da_testExtension(omni.ext.IExt):
                              
                 self._image.set_mouse_moved_fn(lambda x, y, b, m: self._on_mouse_pressed(x,y,b))
                 self._image.set_mouse_pressed_fn(lambda x, y, b, m: self._on_mouse_pressed(x,y,b))
+    
+    def on_startup(self, ext_id):
+    
+        self.image_path = ""
+        
+        self.image_data = np.ones((TEXTURE_SIZE, TEXTURE_SIZE, 4), dtype=np.uint8) * 255
+        self.image_data_size = self.image_data.shape[:2]
+        self.image_data_np = self.image_data.data
+        
+        self.provider = ui.ByteImageProvider()
+        self.provider.set_data_array(self.image_data_np, self.image_data_size)
+
+        self._window = ui.Window("Textured Cube", width=512, height=512)
+        
+        self.build_window()
