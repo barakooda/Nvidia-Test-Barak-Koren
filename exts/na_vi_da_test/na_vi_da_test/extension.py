@@ -2,7 +2,7 @@ import time
 import omni.ext
 import omni.ui as ui
 import omni.kit.commands
-from pxr import Sdf,Usd,UsdUtils,UsdShade
+from pxr import Sdf,UsdShade,UsdGeom
 from .img2txt2img import img2txt2img
 from .circle import draw_circle
 from PIL import Image
@@ -10,7 +10,7 @@ import numpy as np
 from .bug_fixes import fix_cube_uv
 from .utils import wait_for_stage
 from .common import OUTPUT_PATH,MODEL_PATH,TEXTURE_SIZE
-
+import omni.timeline as timeline
 #na_vi_da_test
 # Functions and vars are available to other extension as usual in python: `example.python_ext.some_public_function(x)`
 
@@ -20,11 +20,33 @@ from .common import OUTPUT_PATH,MODEL_PATH,TEXTURE_SIZE
 # on_shutdown() is called.
 class Na_vi_da_testExtension(omni.ext.IExt):
     
-    
+    def set_rotation_for_cube(self)->None:
+        
+        cube = self.stage.GetPrimAtPath(self.cube_path)
+        
+        # Obtain xformable interface
+        xformable = UsdGeom.Xformable(cube)
+        
+        # Create rotation attribute for keyframing
+        rotation_attr = xformable.AddRotateYOp().GetAttr()
+        
+        # Set keyframes
+        self.stage.SetStartTimeCode(1)
+        time_start = self.stage.GetStartTimeCode()
+        time_end = self.stage.GetEndTimeCode()
+        num_frames = time_end - time_start
+        rotation_attr.Set(0, time_start)
+        rotation_attr.Set(360 -  (num_frames / 360 ), 100)      
+        
+        
     # ext_id is current extension id. It can be used with extension manager to query additional information, like where
     # this extension is located on filesystem.
     def click_spwan_cube(self):
         self.spwan_cube()
+        self.set_rotation_for_cube()
+        
+        timeline.get_timeline_interface().play()
+
                 
     def click_load_image(self):
         image_path = self.image_path.model.get_value_as_string()
