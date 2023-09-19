@@ -31,6 +31,7 @@ preview_image = "data/preview.png"
 
 # Icon is shown in Extensions window, it is recommended to be square, of size 256x256.
 icon = "data/icon.png"
+ai_model = "data/mnist_cnn.pt"
 
 # Use omni.ui to build simple UI
 [dependencies]

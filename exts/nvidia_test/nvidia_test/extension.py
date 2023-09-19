@@ -1,3 +1,4 @@
+import os
 import omni.ext
 import omni.ui as ui
 import omni.kit.commands
@@ -8,12 +9,11 @@ from PIL import Image
 import numpy as np
 from .bug_fixes import fix_cube_uv
 from .utils import wait_for_stage
-from .common import OUTPUT_PATH,MODEL_PATH,TEXTURE_SIZE
+from .common import OUTPUT_PATH,MODEL_PATH,TEXTURE_SIZE,root_path
 import omni.timeline as timeline
 #na_vi_da_test
 # Functions and vars are available to other extension as usual in python: `example.python_ext.some_public_function(x)`
-
-
+ 
 # Any class derived from `omni.ext.IExt` in top level module (defined in `python.modules` of `extension.toml`) will be
 # instantiated when extension gets enabled and `on_startup(ext_id)` will be called. Later when extension gets disabled
 # on_shutdown() is called.
@@ -35,7 +35,7 @@ class Na_vi_da_testExtension(omni.ext.IExt):
         time_end = self.stage.GetEndTimeCode()
         num_frames = time_end - time_start
         rotation_attr.Set(0, time_start)
-        rotation_attr.Set(360 -  (num_frames / 360 ), 100)      
+        rotation_attr.Set(360 - (num_frames / 360 ), 100)      
         
         
     # ext_id is current extension id. It can be used with extension manager to query additional information, like where
