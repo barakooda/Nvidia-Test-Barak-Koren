@@ -1,4 +1,3 @@
-import time
 import omni.ext
 import omni.ui as ui
 import omni.kit.commands

@@ -6,20 +6,20 @@ version = "1.0.0"
 authors = ["NVIDIA"]
 
 # The title and description fields are primarily for displaying extension info in UI
-title = "na_vi_da_test"
-description="A simple python extension example to use as a starting point for your extensions."
+title = "Nvidia test for solution engineer position"
+description=""
 
 # Path (relative to the root) or content of readme markdown file for UI.
-readme  = "docs/README.md"
+readme  = "docs/README.md" 
 
 # URL of the extension source repository.
-repository = ""
+repository = "https://github.com/barakooda/Nvidia-Test-Barak-Koren"
 
 # One of categories for UI.
-category = "Example"
+category = "Test"
 
 # Keywords for the extension
-keywords = ["kit", "example"]
+keywords = ["kit", "example","Test"]
 
 # Location of change log file in target (final) folder of extension, relative to the root.
 # More info on writing changelog: https://keepachangelog.com/en/1.0.0/
@@ -39,7 +39,7 @@ icon = "data/icon.png"
 
 # Main python module this extension provides, it will be publicly available as "import na_vi_da_test".
 [[python.module]]
-name = "na_vi_da_test"
+name = "nvidia_test"
 
 [[test]]
 # Extra dependencies only to be used during test run
