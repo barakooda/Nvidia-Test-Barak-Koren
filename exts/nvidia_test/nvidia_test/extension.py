@@ -4,7 +4,7 @@ import omni.ui as ui
 import omni.kit.commands
 from pxr import Sdf,UsdShade,UsdGeom
 from .img2txt2img import img2txt2img
-from .circle import draw_circle
+from .circle import draw_circle,draw_circle_optimized
 from PIL import Image
 import numpy as np
 from .bug_fixes import fix_cube_uv
@@ -61,10 +61,10 @@ class Na_vi_da_testExtension(omni.ext.IExt):
     def _on_mouse_pressed(self, x, y, key):
         image_pos_x=self._image.screen_position_x
         image_pos_y=self._image.screen_position_y
-        x= x - image_pos_x
-        y= y - image_pos_y
+        x = int(x - image_pos_x)
+        y = int(y - image_pos_y)
         
-        self.image_data = draw_circle(self.image_data, x, y, 8)
+        self.image_data = draw_circle_optimized(self.image_data, x, y, 8)
         
         self.image_data_np = self.image_data.data
         self.provider.set_data_array(self.image_data_np, self.image_data_size)

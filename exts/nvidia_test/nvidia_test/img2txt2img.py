@@ -68,13 +68,10 @@ def img2txt2img(model_path:str,image_path:str,output_path:str):
     with torch.no_grad():  # Deactivate gradients for the following block
         output = model(input_image)
 
-    # Print the output
-    print(output)
-
     # Get the predicted label
     _, predicted_label = torch.max(output, 1)
     predicted_txt = predicted_label.item()
-    print("Predicted label:", predicted_txt)
+    #print("Predicted label:", predicted_txt)
 
     # Create an image with white background
     width, height = TEXTURE_SIZE, TEXTURE_SIZE
