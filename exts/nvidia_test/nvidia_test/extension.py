@@ -48,7 +48,7 @@ class Na_vi_da_testExtension(omni.ext.IExt):
 
                 
     def click_load_image(self):
-        image_path = self.image_path.model.get_value_as_string()
+        image_path = self.image_path_string_field_model.get_value_as_string()
         
         img2txt2img(MODEL_PATH, image_path, OUTPUT_PATH)
 
@@ -120,7 +120,7 @@ class Na_vi_da_testExtension(omni.ext.IExt):
         image_path = OUTPUT_PATH
         img = Image.fromarray(self.image_data,mode="RGBA")
         img.save(image_path, "PNG")
-        img2txt2img(MODEL_PATH, image_path, OUTPUT_PATH)
+        img2txt2img(MODEL_PATH, image_path, OUTPUT_PATH,invert_image=True)
         
         shader = UsdShade.Shader.Define(self.stage, f'/World/Looks/OmniPBR/Shader')
         shader.GetInput('diffuse_texture').Set(OUTPUT_PATH)
@@ -138,7 +138,7 @@ class Na_vi_da_testExtension(omni.ext.IExt):
                         with ui.VStack():
                             ui.Button("Load Image From Path", clicked_fn=self.click_load_image)
                             ui.Label("Image Path:")
-                            self.image_path = ui.StringField()
+                            self.image_path_string_field_model = ui.StringField().model
                 with ui.VStack(height=ui.Percent(75)):
                     with ui.CollapsableFrame("By Drawing"):
                         with ui.VStack():
@@ -157,7 +157,7 @@ class Na_vi_da_testExtension(omni.ext.IExt):
     
     def on_startup(self, ext_id):
     
-        self.image_path = ""
+        self.image_path_string_field_model = None
         
         self.image_data = np.ones((TEXTURE_SIZE, TEXTURE_SIZE, 4), dtype=np.uint8) * 255
         self.image_data_size = self.image_data.shape[:2]

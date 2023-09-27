@@ -33,7 +33,7 @@ class Net(nn.Module):
         output = F.log_softmax(x, dim=1)
         return output
 
-def img2txt2img(model_path:str,image_path:str,output_path:str):
+def img2txt2img(model_path:str,image_path:str,output_path:str,invert_image:bool=False):
     
     # Initialize the model
     model = Net()
@@ -48,7 +48,8 @@ def img2txt2img(model_path:str,image_path:str,output_path:str):
     input_image = Image.open(image_path)
     input_image = input_image.resize((28, 28))
     input_image = input_image.split()[0]
-    input_image = ImageOps.invert(input_image)
+    if invert_image:
+        input_image = ImageOps.invert(input_image)
 
     # Define the transformation
     transform = transforms.Compose([
